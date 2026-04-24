@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopZen - Shopping</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Authentication check -->
+  <script>
+    if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+      window.location.href = 'login.html';
+    }
+    function logout() {
+      sessionStorage.removeItem('isLoggedIn');
+      window.location.href = 'login.html';
+    }
+  </script>
+
+  <header>
+    <div class="logo">amazon<span>.in</span></div>
+    <div class="search-bar">
+      <input type="text" class="search-input" placeholder="Search Amazon.in">
+      <button class="search-btn">🔍</button>
+    </div>
+    <div class="header-right">
+      <div class="nav-item">
+        <span class="nav-item-line1">Hello, bobby</span>
+        <span class="nav-item-line2" onclick="logout()">Sign Out</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-item-line1">Returns</span>
+        <span class="nav-item-line2">& Orders</span>
+      </div>
+      <div class="cart-icon-btn">
+        <span class="cart-icon">🛒</span>
+        <span class="cart-badge" id="headerBadge">0</span>
+        <span class="cart-text">Cart</span>
+      </div>
+    </div>
+  </header>
+  <div class="sub-nav">
+    <span>All</span>
+    <span>Fresh</span>
+    <span>Amazon miniTV</span>
+    <span>Sell</span>
+    <span>Best Sellers</span>
+    <span>Mobiles</span>
+    <span>Today's Deals</span>
+  </div>
+
+  <main>
+    <!-- Products Column -->
+    <div>
+      <h2 style="margin-bottom:1rem; font-weight: 500;">Results</h2>
+      <div class="products" id="productGrid">
+        <!-- Cards injected by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Cart / Sidebar -->
+    <aside>
+      <div class="cart-panel">
+        <div class="subtotal-text">
+          Subtotal (<span id="cartItemCount">0</span> items): <span style="font-weight:700; color:#B12704;"
+            id="subtotalCost">₹0</span>
+        </div>
+        <button class="checkout-btn" id="checkoutBtn" disabled>
+          Proceed to Buy
+        </button>
+
+        <hr class="cart-divider">
+        <h2 class="cart-title">Your Cart</h2>
+        <div id="cartBody">
+          <div class="cart-empty">Your Amazon Cart is empty.</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const products = [
+      { id: 1, name: 'Apple AirPods Pro (2nd Generation) ​​​​​​​Wireless Earbuds', emoji: '🎧', desc: 'Up to 2X More Active Noise Cancelling, Adaptive Transparency...', price: 24900, rating: 5 },
+      { id: 2, name: 'Fire TV Stick with Alexa Voice Remote', emoji: '📺', desc: 'Includes TV controls, HD streaming device...', price: 4499, rating: 4 },
+      { id: 3, name: 'Echo Dot (4th Gen) | Smart speaker with Alexa', emoji: '🔊', desc: 'Our most popular smart speaker with detailed sound.', price: 3499, rating: 4 },
+      { id: 4, name: 'Kindle Paperwhite (8 GB)', emoji: '📱', desc: 'Now with a 6.8" display and adjustable warm light...', price: 13999, rating: 5 },
+      { id: 5, name: 'Sony WH-1000XM5 Wireless Headphones', emoji: '🎧', desc: 'Industry Leading Noise Canceling, Auto Pause...', price: 29990, rating: 5 },
+      { id: 6, name: 'Samsung Galaxy S23 Ultra 5G', emoji: '📱', desc: 'Green, 12GB, 256GB Storage, 200MP Camera', price: 124999, rating: 4 },
+      { id: 7, name: 'Logitech MX Master 3S Wireless Mouse', emoji: '🖱️', desc: 'Ultra-fast scrolling, Ergonomic, 8K DPI...', price: 10995, rating: 5 },
+      { id: 8, name: 'Dell XPS 15 Laptop', emoji: '💻', desc: 'Intel Core i9, 32GB RAM, 1TB SSD, NVIDIA RTX 4070', price: 249990, rating: 5 },
+    ];
+
+    let cart = {};
+
+    function stars(n) {
+      return '★'.repeat(n) + '☆'.repeat(5 - n);
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = products.map(p => `
+      <div class="card">
+        <div class="card-img">${p.emoji}</div>
+        <div class="card-name">${p.name}</div>
+        <div class="stars">${stars(p.rating)}</div>
+        <div class="card-price-container">
+          <span class="price-symbol">₹</span>
+          <span class="card-price">${p.price.toLocaleString('en-IN')}</span>
+        </div>
+        <div class="card-desc">${p.desc}</div>
+        <button class="add-btn" onclick="addToCart(${p.id})">Add to cart</button>
+      </div>
+    `).join('');
+    }
+
+    function addToCart(id) {
+      const p = products.find(x => x.id === id);
+      if (cart[id]) {
+        cart[id].qty++;
+      } else {
+        cart[id] = { ...p, qty: 1 };
+      }
+      renderCart();
+    }
+
+    function changeQty(id, delta) {
+      if (!cart[id]) return;
+      cart[id].qty += delta;
+      if (cart[id].qty <= 0) delete cart[id];
+      renderCart();
+    }
+
+    function removeItem(id) {
+      delete cart[id];
+      renderCart();
+    }
+
+    function renderCart() {
+      const items = Object.values(cart);
+      const count = items.reduce((s, i) => s + i.qty, 0);
+      const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+
+      document.getElementById('headerBadge').textContent = count;
+      document.getElementById('cartItemCount').textContent = count;
+      document.getElementById('subtotalCost').textContent = '₹' + subtotal.toLocaleString('en-IN') + '.00';
+      document.getElementById('checkoutBtn').disabled = items.length === 0;
+
+      const body = document.getElementById('cartBody');
+
+      if (items.length === 0) {
+        body.innerHTML = `<div class="cart-empty">Your Amazon Cart is empty.<br><span style="font-size:0.85rem; color:#007185; cursor:pointer;">Shop today's deals</span></div>`;
+        return;
+      }
+
+      body.innerHTML = `<div class="cart-items">` +
+        items.map(i => `
+        <div class="cart-item">
+          <div class="cart-item-emoji">${i.emoji}</div>
+          <div class="cart-item-info">
+            <div class="cart-item-name">${i.name}</div>
+            <div class="cart-item-price">₹${i.price.toLocaleString('en-IN')}.00</div>
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="changeQty(${i.id}, -1)">−</button>
+              <div class="qty-val">${i.qty}</div>
+              <button class="qty-btn" onclick="changeQty(${i.id}, 1)">+</button>
+            </div>
+            <div class="remove-link" onclick="removeItem(${i.id})">Delete</div>
+          </div>
+        </div>
+      `).join('') + `</div>`;
+    }
+
+    renderProducts();
+    renderCart();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazon Sign-In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Specific styles for login overlay / isolated login page */
+    body {
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 2rem;
+    }
+
+    .amz-logo-login {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-bottom: 1.5rem;
+      color: #111;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .amz-logo-login span {
+      color: #f90;
+      font-size: 2.2rem;
+      line-height: 0.8;
+      margin-left: 2px;
+    }
+
+    .login-container {
+      width: 350px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1.5rem 1.8rem;
+      background: #fff;
+    }
+
+    .login-title {
+      font-size: 1.8rem;
+      font-weight: 400;
+      margin-bottom: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .form-group input {
+      padding: 8px 10px;
+      border: 1px solid #a6a6a6;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      outline: none;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
+    }
+
+    .form-group input:focus {
+      border-color: #e77600;
+      box-shadow: 0 0 3px 2px rgba(228, 121, 17, 0.5);
+    }
+
+    .login-btn {
+      width: 100%;
+      background: #f0c14b;
+      background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
+      border: 1px solid #a88734;
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset;
+    }
+
+    .login-btn:hover {
+      background: linear-gradient(to bottom, #f5d78e, #eeb933);
+    }
+
+    .login-footer {
+      font-size: 0.75rem;
+      margin-top: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .error-msg {
+      color: #c40000;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      display: none;
+      font-weight: 500;
+    }
+
+    .error-msg.visible {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="amz-logo-login">amazon<span>.in</span></div>
+
+  <div class="login-container">
+    <h1 class="login-title">Sign in</h1>
+
+    <div class="error-msg" id="errorMsg">
+      <span>⚠️ Username or password is incorrect.</span>
+    </div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Email or mobile phone number</label>
+        <input type="text" id="username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required>
+      </div>
+      <button type="submit" class="login-btn">Continue</button>
+    </form>
+
+    <div class="login-footer">
+      By continuing, you agree to Amazon's Conditions of Use and Privacy Notice.
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value;
+
+      if (user === 'manohar' && pass === '123456789') {
+        sessionStorage.setItem('isLoggedIn', 'true');
+        window.location.href = 'index.html';
+      } else {
+        document.getElementById('errorMsg').classList.add('visible');
+      }
+    });
+  </script>
+</body>
+
+</html>
